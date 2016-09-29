@@ -1,28 +1,39 @@
 var require = (function() {
+  class Module {
+    constructor(url) {
+      this.loaded = false;
+
+      this.filename = url;
+      this.dirname = url.split('?')[0].split('/').slice(0,-1).join('/') + '/';
+
+      this.children = [];
+      this.require = [];
+      this.prepare = imports => null,
+      this.exports = {};
+    }
+    addChildren(module) {
+      this.children.push(module);
+      module.parent = this;
+    }
+  }
+
   var modules = {};
-  var resolveDirname = filename => filename.split('?')[0].split('/').slice(0,-1).join('/') + '/';
-  var dirname = resolveDirname(window.location.href)
+  modules.main = new Module(window.location.href)
 
   var fn = function(...names) {
     if (names.length == 0) {
       return new Promise((resolve, reject) => {resolve()});
     }
-    var parent = this;
     var getOne = (name) => {
-      var url = `${parent.dirname || dirname}${name}.js`;
+      var parent = this instanceof Module ? this : modules.main ;
+      var url = `${parent.dirname}${name}.js`;
       return new Promise(function(resolve, reject){
         var module = modules[url];
         if (module) {
           resolve(module.exports);
         } else {
-          module = modules[url] = {
-            loaded: false,
-            filename: url,
-            dirname: resolveDirname(url),
-            require: [],
-            prepare: imports => null,
-            exports: {},
-          };
+          module = modules[url] = new Module(url);
+          parent.addChildren(module);
           $.ajax(url, {
             cache: false,
             dataType: 'text',
