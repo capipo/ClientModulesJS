@@ -1,10 +1,27 @@
 var require = (function() {
+  // function copied from creationix/path.js
+  function join(/* path segments */) {
+    var parts = [];
+    for (var i = 0, l = arguments.length; i < l; i++) {
+      parts = parts.concat(arguments[i].split("/"));
+    }
+    var newParts = [];
+    for (i = 0, l = parts.length; i < l; i++) {
+      var part = parts[i];
+      if (!part || part === ".") continue;
+      if (part === "..") newParts.pop();
+      else newParts.push(part);
+    }
+    if (parts[0] === "") newParts.unshift("");
+    return newParts.join("/") || (newParts.length ? "/" : ".");
+  }
+
   class Module {
     constructor(url) {
       this.loaded = false;
 
       this.filename = url;
-      this.dirname = url.split('?')[0].split('/').slice(0,-1).join('/') + '/';
+      this.dirname = join(url, '..');
 
       this.children = [];
       this.require = [];
@@ -18,7 +35,7 @@ var require = (function() {
   }
 
   var modules = {};
-  modules.main = new Module(window.location.href)
+  modules.main = new Module(window.location.href.split('?')[0])
 
   var fn = function(...names) {
     if (names.length == 0) {
@@ -26,7 +43,7 @@ var require = (function() {
     }
     var getOne = (name) => {
       var parent = this instanceof Module ? this : modules.main ;
-      var url = `${parent.dirname}${name}.js`;
+      var url = join(parent.dirname, name + '.js');
       return new Promise(function(resolve, reject){
         var module = modules[url];
         if (module) {
@@ -47,7 +64,6 @@ var require = (function() {
                 resolve(module.exports);
             });
           }).fail(reject);
-
         }
       });
     };
