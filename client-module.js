@@ -23,7 +23,7 @@ var require = (function() {
       this.loaded = false;
 
       this.filename = url;
-      this.dirname = join(url, '..');
+      this.dirname = join(url, url.substr(-1) == '/' ? '.' : '..');
 
       this.children = [];
       this.require = [];
@@ -36,14 +36,13 @@ var require = (function() {
       module.parent = this;
     }
   }
-
-  modules.main = new Module(window.location.href.split('?')[0])
-  modules.main.filename = null;
+  modules.main = new Module(window.location.pathname);
 
   var fn = function(names) {
     var getOne = (name) => {
       var parent = this instanceof Module ? this : modules.main ;
-      var url = join(parent.dirname, name + '.js');
+      var with_js = name => name + (name.substr(-3) == '.js' ? '' : '.js');
+      var url = join(parent.dirname, with_js(name));
       return new Promise(function(resolve, reject){
         var module = modules[url];
         if (module) {
@@ -55,12 +54,13 @@ var require = (function() {
             .done(response => {
               new Function('module', response)(module);
               fn.bind(module)(module.require)
-              .then(function(imports) {
+                .then(function(imports) {
                   module.prepare(imports);
                   delete module.prepare;
                   module.loaded = true;
                   resolve(module.exports);
-              });
+                })
+                .catch(reject);
             })
             .fail(reject);
         }
