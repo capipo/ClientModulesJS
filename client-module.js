@@ -51,17 +51,18 @@ var require = (function() {
         } else {
           module = modules[url] = new Module(url);
           parent.addChildren(module);
-          $.ajax(url, { cache: false, dataType: 'text'
-          }).done(response => {
-            new Function('module', response)(module);
-            fn.bind(module)(module.require)
-            .then(function(imports) {
-                module.prepare(imports);
-                delete module.prepare;
-                module.loaded = true;
-                resolve(module.exports);
-            });
-          }).fail(reject);
+          $.ajax(url, { cache: false, dataType: 'text'})
+            .done(response => {
+              new Function('module', response)(module);
+              fn.bind(module)(module.require)
+              .then(function(imports) {
+                  module.prepare(imports);
+                  delete module.prepare;
+                  module.loaded = true;
+                  resolve(module.exports);
+              });
+            })
+            .fail(reject);
         }
       });
     };
