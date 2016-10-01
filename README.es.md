@@ -1,11 +1,10 @@
 # Client-Modules.JS
 
-## Introducción
-
 Biblioteca de javascript para cargar módulos en el lado del cliente,
 al estilo node.js, usando promesas para descargarlos de manera asíncrona.
 
-Actualmente está sufriendo cambios constantes y algunas de las funcionalidades
+Actualmente está recibiendo cambios constantes
+algunas de las funcionalidades
 podrían no funcionar como están descritas.
 
 ## Dependencias
@@ -14,8 +13,7 @@ podrían no funcionar como están descritas.
 
 ## Instalación
 
-Poner el archivo client-modules.js en una carpeta de su projecto web.
-Y despues importarlo en el archivo html.
+Importe el archivo ``client-module.js`` en su página html.
 
 ```html
 <!-- Previamente importar jQuery -->
@@ -24,10 +22,12 @@ Y despues importarlo en el archivo html.
 
 ## Configuración
 
+Aún no hay opciones configurables...
+
 ## Módulos
 
-El sistema de módulos de Client-Module.JS esta inspirado en
-el sistema de módulos de node.js
+Client-Module.JS
+esta inspirado en el sistema de módulos de node.js
 (si no está familiarizado con los modulos de node.js
 [está lectura](https://nodejs.org/api/modules.html)
 podría facilitar la comprensión de este documento).
@@ -35,13 +35,14 @@ Pero los módulos de node se cargan de manera síncrona,
 un comportamiento similar en el lado del cliente
 no sería bién visto por el usuario,
 entonces necesitamos un sistema de módulos asíncrono
-por eso en Client-Module.JS se utilizán promesas.
+por eso utilizaremos promesas.
 
 ### Definir módulos
 
 Cuando escribe un módulo puede usar, al igual que en node.js,
 el objeto module.exports para definir
 lo que el módulo exportará.
+
 ```js
 // module.js
 module.exports.someFunction = function() {
@@ -99,7 +100,7 @@ require('modules/module')
 ```
 
 Si necesita importar mas de un módulo puede pasar un arreglo con los nombres
-de los módulos deseados
+de los módulos deseados.
 
 ```js
 require(['modules/module1', 'modules/module2', 'modules/module3'])
