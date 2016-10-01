@@ -26,7 +26,6 @@ var require = (function() {
       this.dirname = join(url, url.substr(-1) == '/' ? '.' : '..');
 
       this.children = [];
-      this.require = [];
       this.prepare = imports => null,
       this.exports = {};
     }
@@ -67,10 +66,10 @@ var require = (function() {
           .done(response => {
             // execute module definition
             new Function('module', response)(module);
-            // getting module require
-            fn.bind(module)(module.require).catch(reject)
+            // getting module requirement
+            fn.bind(module)(module.requirement).catch(reject)
             .then(imports => {
-              // prepare after require resolved
+              // prepare after requirement resolved
               module.prepare(imports);
               delete module.prepare;
               // finalize and resolve

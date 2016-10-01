@@ -1,4 +1,4 @@
-module.require = ['module2', 'module3']
+module.requirement = ['module2', 'module3']
 
 module.prepare = function(imports) {
   this.exports.fnB = () => {

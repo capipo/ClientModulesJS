@@ -61,15 +61,16 @@ correctamente concluido,
 finalmente tendriamos un resultado poco predecible.
 
 Para resolver esté problema los módulos de Client-Module.JS tiene el atributo
-requirements y prepare
+requirement y prepare
+
 ```js
 //module.js
 
 // Nombre del Módulo requerido por esté módulo
-module.requirements = 'module2';
+module.requirement = 'module2';
 // es posible requerir mas de uno, por ejemplo:
-// module.requirements = ['module2', 'module3'];
-// module.requirements = { two: 'module2', three: 'module3' };
+// module.requirement = ['module2', 'module3'];
+// module.requirement = { two: 'module2', three: 'module3' };
 
 // Esta función será ejecutada despues de resolver las dependencias
 // especificadas en module.requeriments
