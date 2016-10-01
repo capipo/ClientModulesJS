@@ -101,7 +101,7 @@ require('modules/module')
 Si necesita importar mas de un módulo puede pasar un arreglo con los nombres
 de los módulos deseados
 
-´´´js
+```js
 require(['modules/module1', 'modules/module2', 'modules/module3'])
   .then(function(imports) {
     // imports ese un Array que contiene cada objeto exports de los modulos requeridos
@@ -112,4 +112,4 @@ require(['modules/module1', 'modules/module2', 'modules/module3'])
   .catch(function(error) {
     console.log('error!!!', error);
   });
-´´´
+```
