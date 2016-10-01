@@ -39,14 +39,21 @@ var require = (function() {
   modules.main = new Module(window.location.pathname);
 
   var fn = function(names) {
-    var getOne = (name) => {
+    if (Array.isArray(names)) {
+      return Promise.all(names.map(fn));
+    } else if (typeof names === 'string') {
+      var name = names;
       var parent = this instanceof Module ? this : modules.main ;
       var with_js = name => name + (name.substr(-3) == '.js' ? '' : '.js');
       var url = join(parent.dirname, with_js(name));
       return new Promise(function(resolve, reject){
         var module = modules[url];
         if (module) {
-          resolve(module.exports);
+          if(module.loaded) {
+            resolve(module.exports);
+          } else {
+            $(module).on('loaded', (e) => resolve(module.exports));
+          }
         } else {
           module = modules[url] = new Module(url);
           parent.addChildren(module);
@@ -58,6 +65,7 @@ var require = (function() {
                   module.prepare(imports);
                   delete module.prepare;
                   module.loaded = true;
+                  $(module).trigger('loaded');
                   resolve(module.exports);
                 })
                 .catch(reject);
@@ -65,12 +73,6 @@ var require = (function() {
             .fail(reject);
         }
       });
-    };
-
-    if (Array.isArray(names)) {
-      return Promise.all(names.map(getOne));
-    } else if (typeof names === 'string') {
-      return getOne(names);
     } else {
       return new Promise((resolve, reject) => {resolve(names)});
     }

@@ -11,9 +11,10 @@
   </head>
   <body>
     <script type="text/javascript">
-      require('module1')
-      .then((imports) => {
-        var module1 = imports;
+      require(['module1', 'module2', ['module3', 'module4']])
+      .then(imports => {
+        console.log('imports', imports);
+        var module1 = imports[0];
         module1.fnA();
         module1.fnB();
       })
