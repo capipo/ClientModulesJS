@@ -49,8 +49,8 @@ var require = (function() {
       if (Array.isArray(requirement)) {
         return Promise.all(requirement.map(fn));
       } else if (typeof requirement === 'string') {
-        var name = names;
-        var url = join(this.dirname, with_js(name));
+        var parent = this;
+        var url = join(this.dirname, with_js(requirement));
         var identifier = without_js(without_basedir(url));
         var module = modules[identifier];
 
@@ -63,14 +63,14 @@ var require = (function() {
             }
           } else {
             module = modules[identifier] = new Module(url);
-            this.addChildren(module);
+            parent.addChildren(module);
             // fetching module definition
-            $.ajax(url, ajaxOpts).fail(reject)
+            $.ajax(url, ajaxOpts)
             .done(response => {
               // execute module definition
               new Function('module', response)(module);
               // getting module requirement
-              module.require(module.requirement).catch(reject)
+              module.require(module.requirement)
               .then(imports => {
                 // prepare after requirement resolved
                 module.prepare(imports);
@@ -80,7 +80,9 @@ var require = (function() {
                 $(module).trigger('loaded');
                 resolve(module.exports);
               })
-            });
+              .catch(reject);
+            })
+            .fail(reject);
           }
         });
       } else {
