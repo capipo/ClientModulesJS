@@ -1,10 +1,3 @@
-var without_basedir = url => {
-
-  if (url.substr(0, main.dirname.length)) {
-    return url.substr(main.dirname.length);
-  }
-
-};
 var require = (function() {
   // function join copied from creationix/path.js
   function join(/* path segments */) {
