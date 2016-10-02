@@ -3,10 +3,6 @@
 Biblioteca de javascript para cargar módulos en el lado del cliente,
 al estilo node.js, usando promesas para descargarlos de manera asíncrona.
 
-Actualmente está recibiendo cambios constantes
-algunas de las funcionalidades
-podrían no funcionar como están descritas.
-
 ## Dependencias
 
   * [jQuery](https://jquery.com/)
@@ -20,9 +16,6 @@ Importe el archivo ``client-module.js`` en su página html.
 <script type="text/javascript" src="/path/to/client-modules.js"></script>
 ```
 
-## Configuración
-
-Aún no hay opciones configurables...
 
 ## Módulos
 
