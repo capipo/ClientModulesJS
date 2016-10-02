@@ -46,10 +46,10 @@ lo que el módulo exportará.
 ```js
 // module.js
 module.exports.someFunction = function() {
- // do any thing
+ // acciones de la función
 }
 module.export.someObject = {
-  //object content
+  //contenido del objeto
 }
 ```
 
@@ -92,7 +92,7 @@ Para importar un modulo use la función require como se indica
 ```js
 require('modules/module')
   .then(function(imports) {
-    // imports ese el objeto exports del modulo requerido
+    // imports es el objeto exports del modulo requerido
     // ahora puede hacer lo que necesite con el objeto importado
   })
   .catch(function(error) {
@@ -106,10 +106,37 @@ de los módulos deseados.
 ```js
 require(['modules/module1', 'modules/module2', 'modules/module3'])
   .then(function(imports) {
-    // imports ese un Array que contiene cada objeto exports de los modulos requeridos
+    // imports es un Array que contiene cada objeto exports de los modulos requeridos
     var module1 = imports[0],
         module2 = imports[1],
-        module2 = imports[2],
+        module2 = imports[2];
+  })
+  .catch(function(error) {
+    console.log('error!!!', error);
+  });
+```
+
+Tambien puede pasar un objeto.
+
+```js
+var requeriment = {
+  one: 'modules/module1',
+  two: 'modules/module2',
+  three: 'modules/module3'
+};
+require(requeriment)
+  .then(function(imports) {
+    //  imports es un objeto que tendrá la misma estructura que el objeto
+    //  requirement solo que en lugar de los strings que representan
+    //  los nombre de los módulos este contendrá los exports correspondientes.
+    //  algo parecido a esto:
+    //      imports = {
+    //        one: module1_exports,
+    //        two: module2_exports,
+    //        three: module3_exports
+    //      }
+    //  De modo que, por ejemplo, el exports de 'modules/module1'
+    //  estará disponible en imports.one
   })
   .catch(function(error) {
     console.log('error!!!', error);

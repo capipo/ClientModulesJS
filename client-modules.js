@@ -26,7 +26,9 @@ var require = (function() {
           return url.substr(main.dirname.length + 1);
         }
       },
-      is_beggining_with = (full, start) => (full.substr(0, start.length) == start);
+      is_beggining_with = (full, start) => (full.substr(0, start.length) == start),
+      toArray = (o) => '',
+      toObject = (ks, vs) => ks.reduce((o,k,i)=> {o[k] = vs[i]; return o;}, {});
 
   class Module {
     constructor(filename) {
@@ -46,10 +48,20 @@ var require = (function() {
     }
 
     require(requirement) {
+      var that = this;
       if (Array.isArray(requirement)) {
         return Promise.all(requirement.map(this.require.bind(this)));
+      } else if (typeof requirement === 'object') {
+        return new Promise(function(resolve, reject) {
+          var keys = Object.keys(requirement);
+          var values = keys.map(k => requirement[k] || k );
+          that.require(values)
+          .then(imports => {
+            resolve(toObject(keys, imports))
+          })
+          .catch(reject);
+        });
       } else if (typeof requirement === 'string') {
-        var parent = this;
         var url = join(this.dirname, with_js(requirement));
         var identifier = without_js(without_basedir(url));
         var module = modules[identifier];
@@ -63,7 +75,7 @@ var require = (function() {
             }
           } else {
             module = modules[identifier] = new Module(url);
-            parent.addChildren(module);
+            that.addChildren(module);
             // fetching module definition
             $.ajax(url, ajaxOpts)
             .done(response => {
