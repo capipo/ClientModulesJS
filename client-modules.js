@@ -62,7 +62,7 @@ var require = (function() {
           .catch(reject);
         });
       } else if (typeof requirement === 'string') {
-        var url = join(this.dirname, with_js(requirement));
+        var url = that.resolve(with_js(requirement));
         var identifier = without_js(without_basedir(url));
         var module = modules[identifier];
 
@@ -102,6 +102,16 @@ var require = (function() {
         return new Promise((resolve, reject) => {resolve(requirement)});
       }
     }
+
+    resolve(name) {
+      var base = main.dirname;
+      if (name.substr(0, 1) === '/') {
+        base = '/';
+      } else if (name.substr(0, 2) === './' || name.substr(0, 3) === '../') {
+        base = this.dirname;
+      }
+      return join(base, name);
+    }
   }
 
   var main = new Module(window.location.pathname),
@@ -114,7 +124,7 @@ var require = (function() {
   fn.main = main;
   fn.basedir = newBasedir => {
     if (typeof newBasedir == 'string') {
-      main.dirname = join('/', newBasedir);
+      main.dirname = main.resolve(newBasedir);
       main.children = [];
       fn.modules = modules = {};
     };

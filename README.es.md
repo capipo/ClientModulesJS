@@ -19,7 +19,7 @@ Importe el archivo ``client-module.js`` en su página html.
 
 ## Módulos
 
-ClientModule.JS
+ClientModuleJS
 esta inspirado en el sistema de módulos de node.js
 (si no está familiarizado con los modulos de node.js
 [está lectura](https://nodejs.org/api/modules.html)
@@ -53,7 +53,7 @@ del módulo actual pudiera darse por concluida antes de que el nuevo require sea
 correctamente concluido,
 finalmente tendriamos un resultado poco predecible.
 
-Para resolver esté problema los módulos de ClientModule.JS tiene el atributo
+Para resolver esté problema los módulos de ClientModuleJS tiene el atributo
 requirement y prepare
 
 ```js
