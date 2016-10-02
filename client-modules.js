@@ -44,6 +44,49 @@ var require = (function() {
       this.children.push(module);
       module.parent = this;
     }
+
+    require(requirement) {
+      if (Array.isArray(requirement)) {
+        return Promise.all(requirement.map(fn));
+      } else if (typeof requirement === 'string') {
+        var name = names;
+        var url = join(this.dirname, with_js(name));
+        var identifier = without_js(without_basedir(url));
+        var module = modules[identifier];
+
+        return new Promise(function(resolve, reject){
+          if (module) {
+            if(module.loaded) {
+              resolve(module.exports);
+            } else {
+              $(module).on('loaded', (e) => resolve(module.exports));
+            }
+          } else {
+            module = modules[identifier] = new Module(url);
+            this.addChildren(module);
+            // fetching module definition
+            $.ajax(url, ajaxOpts).fail(reject)
+            .done(response => {
+              // execute module definition
+              new Function('module', response)(module);
+              // getting module requirement
+              module.require(module.requirement).catch(reject)
+              .then(imports => {
+                // prepare after requirement resolved
+                module.prepare(imports);
+                delete module.prepare;
+                // finalize and resolve
+                module.loaded = true;
+                $(module).trigger('loaded');
+                resolve(module.exports);
+              })
+            });
+          }
+        });
+      } else {
+        return new Promise((resolve, reject) => {resolve(requirement)});
+      }
+    }
   }
 
   var main = new Module(window.location.pathname),
@@ -51,56 +94,14 @@ var require = (function() {
     modules = {};
 
   // require function
-  var fn = function(names) {
-    if (Array.isArray(names)) {
-      return Promise.all(names.map(fn));
-    } else if (typeof names === 'string') {
-      var name = names;
-      var parent = this instanceof Module ? this : main ;
-      var url = join(parent.dirname, with_js(name));
-      var identifier = without_js(without_basedir(url));
-      var module = modules[identifier];
-
-      return new Promise(function(resolve, reject){
-        if (module) {
-          if(module.loaded) {
-            resolve(module.exports);
-          } else {
-            $(module).on('loaded', (e) => resolve(module.exports));
-          }
-        } else {
-          module = modules[identifier] = new Module(url);
-          parent.addChildren(module);
-          // fetching module definition
-          $.ajax(url, ajaxOpts).fail(reject)
-          .done(response => {
-            // execute module definition
-            new Function('module', response)(module);
-            // getting module requirement
-            fn.bind(module)(module.requirement).catch(reject)
-            .then(imports => {
-              // prepare after requirement resolved
-              module.prepare(imports);
-              delete module.prepare;
-              // finalize and resolve
-              module.loaded = true;
-              $(module).trigger('loaded');
-              resolve(module.exports);
-            })
-          });
-        }
-      });
-    } else {
-      return new Promise((resolve, reject) => {resolve(names)});
-    }
-  }
-  fn.modules = () => modules;
-  fn.main = () => main;
+  fn = main.require.bind(main);
+  fn.modules = modules;
+  fn.main = main;
   fn.basedir = newBasedir => {
     if (typeof newBasedir == 'string') {
       main.dirname = join('/', newBasedir);
       main.children = [];
-      modules = {};
+      fn.modules = modules = {};
     };
     return main.dirname;
   };
