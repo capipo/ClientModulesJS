@@ -47,7 +47,7 @@ var require = (function() {
 
     require(requirement) {
       if (Array.isArray(requirement)) {
-        return Promise.all(requirement.map(fn));
+        return Promise.all(requirement.map(this.require.bind(this)));
       } else if (typeof requirement === 'string') {
         var parent = this;
         var url = join(this.dirname, with_js(requirement));
