@@ -68,7 +68,8 @@ var require = (function() {
             $.ajax(url, ajaxOpts)
             .done(response => {
               // execute module definition
-              new Function('module', response)(module);
+              new Function('module', 'require', response)
+              (module, module.require);
               // getting module requirement
               module.require(module.requirement)
               .then(imports => {
