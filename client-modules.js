@@ -16,7 +16,7 @@ var require = (function() {
     return newParts.join("/") || (newParts.length ? "/" : ".");
   }
 
-  // function helpers
+  // helpers
   var with_js = name => name + (name.substr(-3) == '.js' ? '' : '.js'),
       without_js = name => name.substr(-3) == '.js'
                          ? name.substr(0, name.length - 3)
@@ -27,9 +27,10 @@ var require = (function() {
         }
       },
       is_beggining_with = (full, start) => (full.substr(0, start.length) == start),
-      toArray = (o) => '',
-      toObject = (ks, vs) => ks.reduce((o,k,i)=> {o[k] = vs[i]; return o;}, {});
+      to_arr = (o) => Object.keys(o).map(k => o[k] || k ),
+      to_obj = (ks, vs) => ks.reduce((o,k,i)=> {o[k] = vs[i]; return o;}, {});
 
+  // Module
   class Module {
     constructor(filename) {
       this.loaded = false;
@@ -54,12 +55,9 @@ var require = (function() {
       } else if (typeof requirement === 'object') {
         return new Promise(function(resolve, reject) {
           var keys = Object.keys(requirement);
-          var values = keys.map(k => requirement[k] || k );
-          that.require(values)
-          .then(imports => {
-            resolve(toObject(keys, imports))
-          })
-          .catch(reject);
+          that.require(to_arr(requirement))
+            .then(imports => resolve(to_obj(keys, imports)))
+            .catch(reject);
         });
       } else if (typeof requirement === 'string') {
         var url = that.resolve(with_js(requirement));
@@ -80,8 +78,8 @@ var require = (function() {
             $.ajax(url, ajaxOpts)
             .done(response => {
               // execute module definition
-              new Function('module', 'require', response)
-              (module, module.require);
+              new Function('exports', 'require', 'module', '__filename', '__dirname', response)
+              (module.exports, publicProps(module.require), module, module.filename, module.dirname);
               // getting module requirement
               module.require(module.requirement)
               .then(imports => {
@@ -114,23 +112,27 @@ var require = (function() {
     }
   }
 
+  // core
   var main = new Module(window.location.pathname),
     ajaxOpts = { cache: false, dataType: 'text' },
     modules = {};
 
-  // require function
-  fn = main.require.bind(main);
-  fn.modules = modules;
-  fn.main = main;
-  fn.basedir = newBasedir => {
-    if (typeof newBasedir == 'string') {
-      main.dirname = main.resolve(newBasedir);
-      main.children = [];
-      fn.modules = modules = {};
+  function publicProps(fn) {
+    fn.modules = modules;
+    fn.main = main;
+    fn.basedir = newBasedir => {
+      if (typeof newBasedir == 'string') {
+        main.dirname = main.resolve(newBasedir);
+        main.children = [];
+        fn.modules = modules = {};
+      };
+      return main.dirname;
     };
-    return main.dirname;
-  };
-  return fn;
+    return fn;
+  }
+
+  // require function
+  return publicProps(main.require.bind(main));
 }({
 
 }));
