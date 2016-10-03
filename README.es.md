@@ -3,18 +3,20 @@
 Biblioteca de javascript para cargar módulos en el lado del cliente,
 al estilo node.js, usando promesas para descargarlos de manera asíncrona.
 
-# Table of Contents
+## Contenido
 * [Dependencias](#dependencies)
 * [Instalación](#install)
 * [Módulos](#modules)
  * [Definir módulos](#modules-define)
  * [Importar módulos](#modules-require)
 
-## Dependencias<a name="dependencies"></a>
+<a name="dependencies"></a>
+## Dependencias
 
   * [jQuery](https://jquery.com/)
 
-## Instalación<a name="install"></a>
+<a name="install"></a>
+## Instalación
 
 Importe el archivo ``client-module.js`` en su página html.
 
@@ -23,8 +25,8 @@ Importe el archivo ``client-module.js`` en su página html.
 <script type="text/javascript" src="/path/to/client-modules.js"></script>
 ```
 
-
-## Módulos<a name="modules"></a>
+<a name="modules"></a>
+## Módulos
 
 ClientModuleJS
 esta inspirado en el sistema de módulos de node.js
@@ -37,7 +39,8 @@ no sería bién visto por el usuario,
 entonces necesitamos un sistema de módulos asíncrono
 por eso utilizaremos promesas.
 
-### Definir módulos<a name="modules-define"></a>
+<a name="modules-define"></a>
+### Definir módulos
 
 Cuando escribe un módulo puede usar, al igual que en node.js,
 el objeto module.exports para definir
