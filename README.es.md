@@ -89,7 +89,8 @@ module.exports.independent = function() {
 }
 ```
 
-### Importar módulos<a name="modules-require"></a>
+<a name="modules-require"></a>
+### Importar módulos
 
 Para importar un modulo use la función require como se indica
 ```js
