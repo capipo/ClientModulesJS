@@ -52,8 +52,8 @@ module.export.someObject = {
 };
 ```
 
-Para resolver esté problema los módulos de ClientModuleJS tiene el atributo
-requirement y prepare
+Use `requirement` to specify dependencies and `prepare` to define exports
+after the required dependencies are available.
 
 ```js
 //module.js
