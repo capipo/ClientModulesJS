@@ -79,7 +79,7 @@ var require = (function() {
             .done(response => {
               // execute module definition
               new Function('exports', 'require', 'module', '__filename', '__dirname', response)
-              (module.exports, publicProps(module.require), module, module.filename, module.dirname);
+              (module.exports, publicProps(module.require.bind(module)), module, module.filename, module.dirname);
               // getting module requirement
               module.require(module.requirement)
               .then(imports => {
